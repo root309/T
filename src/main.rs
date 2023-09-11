@@ -95,10 +95,9 @@ fn main() {
 
     let mut pos = Position { x: 4, y: 0 };
 
-    // 画面クリア
-    println!("\x1b[2J\x1b[H\x1b[?25l");
-
     for _ in 0..5 {
+        // 画面クリア
+        println!("\x1b[2J\x1b[H\x1b[?25l");
         // 描画用フィールドの生成（新しいfieldをコピーする）
         let mut field_buf = field.clone();
         // 描画用フィールドにブロックの情報を書き込む
