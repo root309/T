@@ -1,4 +1,5 @@
 use std::{thread, time};
+
 // ブロックの種類
 enum BlockKind {
     I,
