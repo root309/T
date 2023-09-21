@@ -1,5 +1,10 @@
 use std::{thread, time};
 
+// フィールドサイズ
+const FIELD_WIDTH:  usize = 11 + 2;  // フィールド＋壁
+const FIELD_HEIGHT: usize = 20 + 1;  // フィールド＋底
+type Field = [[usize; FIELD_WIDTH]; FIELD_HEIGHT];
+#[derive(Clone, Copy)]
 // ブロックの種類
 enum BlockKind {
     I,
@@ -68,7 +73,17 @@ struct Position {
     x: usize,
     y: usize,
 }
-
+// ブロックがフィールドに衝突する場合は`true`を返す
+fn is_collision(field: &Field, pos: &Position, block: BlockKind) -> bool {
+    for y in 0..4 {
+        for x in 0..4 {
+            if field[y+pos.y+1][x+pos.x] & BLOCKS[block as usize][y][x] == 1 {
+                return true;
+            }
+        }
+    }
+    false
+}
 fn main() {
     let field = [
         [1,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -96,11 +111,16 @@ fn main() {
     // instance
     let mut pos = Position { x: 4, y: 0 };
 
-    for _ in 0..5 {
+    for _ in 0..30 {
         // 画面クリア
         println!("\x1b[2J\x1b[H\x1b[?25l");
         // 描画用フィールドの生成（新しいfieldをコピーする）
         let mut field_buf = field.clone();
+        // 当たり判定
+        if !is_collision(&field, &pos, BlockKind::I) {
+            // posのy座標を更新
+            pos.y += 1;
+        }
         // 描画用フィールドにブロックの情報を書き込む
         for y in 0..4 {
             for x in 0..4 {
@@ -109,12 +129,11 @@ fn main() {
                 }
             }
         }
-        // posのy座標を更新
-        pos.y += 1;
+
         // フィールドを描画
         println!("\x1b[H");  // カーソルを先頭に移動
-        for y in 0..21 {
-            for x in 0..13 {
+        for y in 0..FIELD_HEIGHT {
+            for x in 0..FIELD_WIDTH {
                 if field_buf[y][x] == 1 {
                     print!("[]");
                 } else {
